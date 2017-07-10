@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements OnDownloadComplet
                 startActivity(i) ;
             }
         });
-
     }
 
     private void fetchPosts() {

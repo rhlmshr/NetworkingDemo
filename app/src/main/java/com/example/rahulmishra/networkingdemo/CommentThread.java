@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -23,9 +22,9 @@ import java.util.Scanner;
 
 public class CommentThread extends AsyncTask<String, Void, Post_Comments> {
 
-    OnDownloadCompleteListener mListener ;
+    OnCommentUpdateComplete mListener ;
 
-    void setOnDownloadCompleteListener(OnDownloadCompleteListener listener) {
+    void setOnCommentUpdateListener(OnCommentUpdateComplete listener) {
         mListener = listener ;
     }
 
@@ -69,10 +68,11 @@ public class CommentThread extends AsyncTask<String, Void, Post_Comments> {
                 String comment = currentJsonObject.getString("body") ;
                 String name = currentJsonObject.getString("email") ;
 
-                commentsList.first.get(i) = name ;
-                commentsList.second.get(i) = comment ;
+                commentsList.first.add(name);
+                commentsList.second.add(comment) ;
             }
-            return currentPost ;
+
+            return currentPost;
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -84,8 +84,10 @@ public class CommentThread extends AsyncTask<String, Void, Post_Comments> {
     protected void onPostExecute(Post_Comments post_comments) {
         super.onPostExecute(post_comments);
         if(mListener != null)
-            mListener.onDownloadComplete(post_comments.getComments().second);
+            mListener.setOnCommentUpdateListener(post_comments) ;
     }
 }
 
-//interface // TODO: 09-07-2017  
+interface OnCommentUpdateComplete   {
+    void setOnCommentUpdateListener (Post_Comments post_comments) ;
+}

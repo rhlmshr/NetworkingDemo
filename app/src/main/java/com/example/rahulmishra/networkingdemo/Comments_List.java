@@ -4,17 +4,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Comments_List extends AppCompatActivity {
+public class Comments_List extends AppCompatActivity implements OnCommentUpdateComplete {
 
-    ArrayAdapter<String> adapter ;
-    List<String> comments ;
+    RecyclerAdapter adapter ;
+
+    Pair<ArrayList<String>, ArrayList<String>> comments ;
     List <Post_Comments> postContent ;
 
     @Override
@@ -39,6 +44,13 @@ public class Comments_List extends AppCompatActivity {
         int position = i.getIntExtra("position", 0) ;
 
         fetchComments(position) ;
+        comments = postContent.get(position).getComments() ;
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.myList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        adapter = new RecyclerAdapter(this, postContent.get(position)) ;
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     private void fetchComments(int positionInList) {
@@ -48,11 +60,16 @@ public class Comments_List extends AppCompatActivity {
                                     Integer.toString(positionInList)};
         CommentThread commentThread = new CommentThread() ;
         commentThread.execute(commentsURL) ;
-        commentThread.setOnDownloadCompleteListener(this) ;
+        commentThread.setOnCommentUpdateListener(this);
     }
 
-    public void onDownloadComplete(Post_Comments post_comments){
-        //// TODO: 09-07-2017  
+    @Override
+    public void setOnCommentUpdateListener(Post_Comments post_comments) {
+        post_comments.getComments().first.clear();
+        post_comments.getComments().second.clear();
+        comments.first.addAll(post_comments.getComments().first);
+        comments.second.addAll(post_comments.getComments().second);
+
         adapter.notifyDataSetChanged();
     }
 }

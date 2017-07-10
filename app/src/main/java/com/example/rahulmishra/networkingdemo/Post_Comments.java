@@ -17,7 +17,10 @@ public class Post_Comments {
     public Post_Comments(int id, String post) {
         this.id = id;
         this.post = post;
-    }
+        ArrayList<String> first = new ArrayList<>();
+        ArrayList<String> second = new ArrayList<>();
+        this.comments = new Pair<>(first,second);
+     }
 
     public int getId() {
         return id;
